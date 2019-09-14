@@ -18,7 +18,7 @@ public class Grid : MonoBehaviour
             {
                 for (int j = 0; j < GameFieldSize.y; j++)
                 {
-                    retList.Add(GameFieldCells[i,j]);
+                    retList.Add(GameFieldCells[i, j]);
                 }
             }
             return retList;
@@ -69,19 +69,33 @@ public class Grid : MonoBehaviour
                 GameObject newbutton = Instantiate(buttonPrefab, transform.position, Quaternion.identity);
                 newbutton.transform.localScale *= 0.3f;
                 newbutton.transform.SetParent(grid.transform);
-                GameFieldCells[i,j] = newbutton.GetComponent<Cell>();
+                GameFieldCells[i, j] = newbutton.GetComponent<Cell>();
             }
         }
     }
 
     public void Reset()
     {
-        foreach (Cell cell in buttons)
+        for (int i = 0; i < GameFieldSize.x; i++)
         {
-            Destroy(cell.GetComponentInChildren<GameObject>());
-            cell.GetComponent<Button>().interactable = true;
-            cell.innerValue = null;
+            for (int j = 0; j < GameFieldSize.y; j++)
+            {
+                if (GameFieldCells[i, j].CrossOrCircleGO == null)
+                {
+                    continue;
+                }
+                //if (cell.GetComponentInChildren<GameObject>() == null)
+                MovingLogic.instance.EndGameBoard.transform.localScale = Vector2.zero;
+                Destroy(GameFieldCells[i, j].CrossOrCircleGO);
+                GameFieldCells[i, j].button.transform.GetComponent<Button>().interactable = true;
+                GameFieldCells[i, j].button.transform.GetComponent<Cell>().innerValue = null;
+                //GameManager.instance.curPlayer = (GameManager.instance.curPlayer == Player.Computer ? Player.User : Player.Computer);
+            }
         }
+                if (GameManager.instance.curPlayer == Player.Computer)
+                {
+                    MovingLogic.instance.InvokeComputerMove();
+                }
     }
 
     //public bool CheckForWinner()
@@ -127,11 +141,6 @@ public class Grid : MonoBehaviour
                     }
                     if (j == GameFieldSize.y - 1)
                     {
-                        Debug.LogFormat("Win combination on {0} line. Win figure is {1}", i, GameFieldCells[i, 0].innerValue == null ? "null" : GameFieldCells[i, 0].innerValue.ToString());
-                        if (GameFieldCells[i, 0].innerValue == CrossOrCircle.Cross)
-                            GameManager.instance.Increment(1, 0, 0);
-                        else
-                            GameManager.instance.Increment(0, 1, 0);
                         return true;
                     }
                 }
@@ -147,10 +156,6 @@ public class Grid : MonoBehaviour
                         }
                         if (j == GameFieldSize.x - 1)
                         {
-                            if (GameFieldCells[i, 0].innerValue == CrossOrCircle.Cross)
-                                GameManager.instance.Increment(1, 0, 0);
-                            else
-                                GameManager.instance.Increment(0, 1, 0);
                             return true;
                         }
                     }
@@ -167,10 +172,6 @@ public class Grid : MonoBehaviour
                         }
                         if (j == GameFieldSize.x - 1)
                         {
-                            if (GameFieldCells[i, 0].innerValue == CrossOrCircle.Cross)
-                                GameManager.instance.Increment(1, 0, 0);
-                            else
-                                GameManager.instance.Increment(0, 1, 0);
                             return true;
                         }
                     }
@@ -191,13 +192,6 @@ public class Grid : MonoBehaviour
                     }
                     if (i == GameFieldSize.x - 1)
                     {
-                        Debug.LogFormat("Win combination is on {0} line. Win figure {1}", j, GameFieldCells[0, j].innerValue == null ? "null" : GameFieldCells[0, j].innerValue.ToString());
-                        if (GameFieldCells[0, j].innerValue == CrossOrCircle.Cross)
-                            GameManager.instance.Increment(1, 0, 0);
-                        else
-                        {
-                            GameManager.instance.Increment(0, 1, 0);
-                        }
                         return true;
                     }
                 }

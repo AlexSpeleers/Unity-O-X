@@ -8,7 +8,7 @@ public class SceneLoader : MonoBehaviour
     [SerializeField]
     private int sceneIndex;
     public Button button;
-    private Scene scene;
+    //private Scene scene;
 
     private void Awake()
     {

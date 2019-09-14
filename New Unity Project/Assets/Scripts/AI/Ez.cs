@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Ez : AbstractAI
 {
@@ -9,7 +10,8 @@ public class Ez : AbstractAI
         if (!IsThereAnyFreeCell())
         {
             GameManager.instance.Increment(0, 0, 1);
-            throw new System.Exception("There is no free cell in game field");
+            MovingLogic.instance.EndGameBoard.GetComponentInChildren<TMP_Text>().text = "DRAW";
+            MovingLogic.instance.EndGameBoard.transform.localScale = Vector2.one;
         }
 
         int randomCellNum = -1;

@@ -7,6 +7,7 @@ public class Cell : MonoBehaviour
 {
     private MovingLogic main;
     public CrossOrCircle? innerValue;
+    public GameObject CrossOrCircleGO;
     public Button button;
 
     private void Awake()
@@ -25,12 +26,12 @@ public class Cell : MonoBehaviour
 
     public void SpawnFigure(CrossOrCircle crossOrCircle)
     {
-        GameObject figure = Instantiate(
+        CrossOrCircleGO = Instantiate(
             crossOrCircle == CrossOrCircle.Circle ? GameManager.instance.circlePrefab : GameManager.instance.crossPrefab,
             transform.position,
             Quaternion.identity);
-        figure.transform.localScale *= 0.4f;
-        figure.transform.SetParent(this.gameObject.transform);
+        CrossOrCircleGO.transform.localScale *= 0.4f;
+        CrossOrCircleGO.transform.SetParent(this.gameObject.transform);
         gameObject.GetComponent<Button>().interactable = false;
         innerValue = crossOrCircle;
         Debug.Log(crossOrCircle.ToString() + " is spawned");

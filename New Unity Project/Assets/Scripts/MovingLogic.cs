@@ -9,13 +9,17 @@ public class MovingLogic : MonoBehaviour
 {
     public static MovingLogic instance;
 
+    public GameObject EndGameBoard;
+
     [SerializeField]
     private GameObject ScoreBoard;
 
     [SerializeField]
     private List<DificultyData> dificultyDatas = new List<DificultyData>();
 
+    [HideInInspector]
     public Grid grid;
+    public Button resetButton;
 
     private CrossOrCircle nowFigureMoving = CrossOrCircle.Cross;
 
@@ -66,6 +70,9 @@ public class MovingLogic : MonoBehaviour
         #endregion
         grid = FindObjectOfType<Grid>();
         //RemoveDifficyltyDuples();
+        EndGameBoard.transform.localScale = Vector2.zero;
+        resetButton = EndGameBoard.GetComponentInChildren<Button>();
+        resetButton.onClick.AddListener(grid.Reset);
     }
 
     /*private void RemoveDifficyltyDuples()
@@ -98,21 +105,31 @@ public class MovingLogic : MonoBehaviour
     //Player's move
     public void PlayerMove(GameObject button)
     {
+       
         bool isFree = button.GetComponent<Cell>().innerValue == null;
         if (GameManager.instance.curPlayer != Player.User || !isFree) { return; }
 
         button.GetComponent<Cell>().SpawnFigure(nowFigureMoving);
-
         if (!IsThereAWinner())
         {
-            //Swap moving figure
-            nowFigureMoving = (nowFigureMoving == CrossOrCircle.Cross) ? CrossOrCircle.Circle : CrossOrCircle.Cross;
+            if (!Ai.IsThereAnyFreeCell())
+            {
+                GameManager.instance.Increment(0, 0, 1);
+                EndGameBoard.GetComponentInChildren<TMP_Text>().text = "DRAW";
+                EndGameBoard.transform.localScale = Vector2.one;
+            }
+            else
+            {
+                //Swap moving figure
+                nowFigureMoving = (nowFigureMoving == CrossOrCircle.Cross) ? CrossOrCircle.Circle : CrossOrCircle.Cross;
 
-            //Swap movin player
-            GameManager.instance.curPlayer = Player.Computer;
+                //Swap movin player
+                GameManager.instance.curPlayer = Player.Computer;
 
-            MakeComputerMove();
-        }
+                MakeComputerMove();
+            }
+        }       
+        
     }
 
     //Computer's move
@@ -130,11 +147,24 @@ public class MovingLogic : MonoBehaviour
         }
     }
 
+    public void InvokeComputerMove()
+    {
+        MakeComputerMove();
+    }
     private bool IsThereAWinner()
     {
         if (grid.CheckForWinner())
         {
-            Debug.Log("Winner is " + GameManager.instance.curPlayer.ToString());
+            if (GameManager.instance.curPlayer == Player.User)
+            {
+                GameManager.instance.Increment(1, 0, 0);
+            }
+            else
+            {
+                GameManager.instance.Increment(0, 1, 0);
+            }
+            EndGameBoard.GetComponentInChildren<TMP_Text>().text = $"{GameManager.instance.curPlayer.ToString()} won";
+            EndGameBoard.transform.localScale = Vector2.one;
             return true;
         }
         return false;
@@ -152,5 +182,9 @@ public class MovingLogic : MonoBehaviour
         public Dificulty dificulty;
         public AbstractAI aI;
         
+    }
+    private void OnDestroy()
+    {
+        resetButton.onClick.RemoveListener(grid.Reset);
     }
 }

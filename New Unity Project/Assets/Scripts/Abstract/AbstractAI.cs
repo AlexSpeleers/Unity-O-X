@@ -6,7 +6,7 @@ public abstract class AbstractAI : MonoBehaviour
 {
     public abstract Cell CalculateMoveCell();
 
-    protected bool IsThereAnyFreeCell()
+    public bool IsThereAnyFreeCell()
     {
         bool retValue = false;
         MovingLogic.instance.grid.buttons.ForEach(x => 
